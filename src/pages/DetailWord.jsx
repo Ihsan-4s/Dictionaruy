@@ -1,31 +1,34 @@
-import { Button, Dropdown, DropdownItem, ButtonGroup, Spinner } from "flowbite-react";
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom";
 import SearchBarComp from "../components/SearchBarComp";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import '../App.css';
+
+const SPEECH_TYPES = ["all", "noun", "verb", "adjective", "adverb", "interjection"];
 
 export default function DetailWord() {
     const { word } = useParams();
     const [wordDetails, setWordDetails] = useState(null);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate()
+    const [error, setError] = useState(false);
+    const navigate = useNavigate();
     const [filteredMeanings, setFilteredMeanings] = useState([]);
+    const [activeFilter, setActiveFilter] = useState("all");
+
     const wordData = wordDetails?.[0];
     const phonetic = wordData?.phonetic || wordData?.phonetics?.find(p => p.text)?.text;
-    
-    const synonyms = wordData?.meanings
-        ?.flatMap(m => [
-            ...(m.synonyms || []),
-            ...m.definitions.flatMap(d => d.synonyms || [])
-        ]);
 
-    const antonyms = wordData?.meanings
-        ?.flatMap(m => [
-            ...(m.antonyms || []),
-            ...m.definitions.flatMap(d => d.antonyms || [])
-        ]);
+    const synonyms = wordData?.meanings?.flatMap(m => [
+        ...(m.synonyms || []),
+        ...m.definitions.flatMap(d => d.synonyms || [])
+    ]);
+
+    const antonyms = wordData?.meanings?.flatMap(m => [
+        ...(m.antonyms || []),
+        ...m.definitions.flatMap(d => d.antonyms || [])
+    ]);
 
     function filterMeaning(type) {
+        setActiveFilter(type);
         const meanings = wordData.meanings;
         setFilteredMeanings(
             type === "all" ? meanings : meanings.filter(m => m.partOfSpeech === type)
@@ -33,130 +36,173 @@ export default function DetailWord() {
     }
 
     async function fetchWordDetails() {
+        setLoading(true);
+        setError(false);
         const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
-            setWordDetails(data)
-            setLoading(false)
-        } catch (error) {
-            console.error("Error fetching word details:", error);
-            setLoading(false)
+            if (!Array.isArray(data)) {
+                setError(true);
+                setWordDetails(null);
+            } else {
+                setWordDetails(data);
+                setError(false);
+            }
+            setLoading(false);
+        } catch (err) {
+            console.error("Error fetching word details:", err);
+            setError(true);
+            setLoading(false);
         }
     }
 
     useEffect(() => {
         if (wordData?.meanings) {
             setFilteredMeanings(wordData.meanings);
+            setActiveFilter("all");
         }
     }, [wordData]);
 
     useEffect(() => {
-        fetchWordDetails()
-    }, [word])
+        fetchWordDetails();
+    }, [word]);
 
     if (loading) {
         return (
-            <div className="flex flex-col gap-2">
-                <div className="text-center mt-50 mx-auto">
-                    <Spinner aria-label="Center-aligned spinner example" size="xl" />
+            <div className="page-container">
+                <div className="skeleton-detail animate-fade-in">
+                    <div className="detail-search">
+                        <SearchBarComp />
+                    </div>
+                    <div className="skeleton" style={{ width: "30%", height: 40, marginBottom: 8 }}></div>
+                    <div className="skeleton" style={{ width: "15%", height: 20, marginBottom: 32 }}></div>
+                    <div className="skeleton" style={{ width: "100%", height: 1, marginBottom: 24 }}></div>
+                    <div className="skeleton" style={{ width: "12%", height: 14, marginBottom: 16 }}></div>
+                    <div className="skeleton" style={{ width: "90%", height: 16, marginBottom: 12 }}></div>
+                    <div className="skeleton" style={{ width: "85%", height: 16, marginBottom: 12 }}></div>
+                    <div className="skeleton" style={{ width: "70%", height: 16, marginBottom: 12 }}></div>
                 </div>
             </div>
-        )
+        );
     }
-    return (
-        <>
-            <div style={{
-                minHeight: "100vh",
-                background: "linear-gradient(to bottom, #013fba, #ffffff)",
-            }}>
-                <div className="w-full max-w-5xl mx-auto">
-                    <h1 className="text-4xl font-bold text-center text-white mb-10">English Dictionary for Better Vocabulary</h1>
-                    <SearchBarComp />
-                    <div className="mt-20 p-5 bg-white rounded-2xl">
-                        <div className="sticky top-0 z-10">
-                            <ButtonGroup>
-                                <Button href="#word" color="alternative">
-                                    Word
-                                </Button>
-                                <Button href="#interjection" color="alternative">
-                                    Interjection
-                                </Button>
-                                <Button href="#synonyms" color="alternative">
-                                    Synonims and Antonyms
-                                </Button>
-                            </ButtonGroup>
-                        </div>
-                        <Dropdown label="Filter Part of Speech" className="my-5">
-                                <DropdownItem onClick={() => filterMeaning("all")}>All</DropdownItem>
-                                <DropdownItem onClick={() => filterMeaning("noun")}>Noun</DropdownItem>
-                                <DropdownItem onClick={() => filterMeaning("verb")}>Verb</DropdownItem>
-                                <DropdownItem onClick={() => filterMeaning("adjective")}>Adjective</DropdownItem>
-                                <DropdownItem onClick={() => filterMeaning("adverb")}>Adverb</DropdownItem>
-                            </Dropdown>
-                        <div className="flex justify-center my-2">
-                            <div className="w-full max-w-5xl p-5 bg-white shadow-2xl shadow-blue-500 rounded-2xl">
-                                <p id="word" className="text-4xl font-bold text-blue-600">{wordData ? wordData.word : "Word not found"}</p>
-                                <p className="text-xl text-gray-400">
-                                    {phonetic}
-                                </p>
-                                {wordData?.phonetics
-                                    ?.filter(p => p.audio)
-                                    .map((p, i) => (
-                                        <audio key={i} controls className="mt-2">
-                                            <source src={p.audio} type="audio/mpeg" />
-                                        </audio>
-                                    ))}
-                                <hr className="my-5" />
-                                {filteredMeanings?.map((meaning, i) => (
-                                    <div key={i} className="mt-5">
-                                        <p className="text-lg font-semibold text-gray-500">
-                                            {meaning.partOfSpeech}
-                                        </p>
-                                        <ul id="interjection" className="list-disc ml-6 mt-2">
-                                            {meaning.definitions.map((def, j) => (
-                                                <li key={j} className="text-gray-700 mb-2">
-                                                    <p>{def.definition}</p>
-                                                    {def.example && (
-                                                        <p className="text-sm text-gray-400 italic">
-                                                            Example: {def.example}
-                                                        </p>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                                {/* <pre>{JSON.stringify(wordDetails, null, 2)}</pre> */}
-                                {synonyms?.length > 0 && (
-                                    <>
-                                        <hr id="synonyms" className="my-5" />
-                                        <p className="text-lg font-semibold text-gray-500">Synonyms</p>
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                            {synonyms.map((s, i) => (
-                                                <span
-                                                    key={i} onClick={() => navigate(`/word/${s}`)} className="cursor-pointer px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">{s}</span>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
 
-                                {antonyms?.length > 0 && (
-                                    <>
-                                        <hr className="my-5" />
-                                        <p className="text-lg font-semibold text-gray-500">Antonyms</p>
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                            {antonyms.map((a, i) => (
-                                                <span key={i} onClick={() => navigate(`/word/${a}`)} className="cursor-pointer px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">{a}</span>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </div>
+    if (error || !wordData) {
+        return (
+            <div className="page-container">
+                <div className="detail-container animate-fade-in">
+                    <div className="detail-search">
+                        <SearchBarComp />
+                    </div>
+                    <div className="not-found">
+                        <p className="not-found-emoji">🔍</p>
+                        <p className="not-found-title">Word not found</p>
+                        <p className="not-found-text">
+                            We couldn't find a definition for "<strong>{word}</strong>". Try searching for another word.
+                        </p>
                     </div>
                 </div>
             </div>
-        </>
-    )
+        );
+    }
+
+    return (
+        <div className="page-container">
+            <div className="detail-container animate-fade-in-up">
+                {/* Search */}
+                <div className="detail-search">
+                    <SearchBarComp />
+                </div>
+
+                {/* Filter Pills */}
+                <div className="filter-pills">
+                    {SPEECH_TYPES.map(type => (
+                        <button
+                            key={type}
+                            className={`filter-pill ${activeFilter === type ? "active" : ""}`}
+                            onClick={() => filterMeaning(type)}
+                        >
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Word Header */}
+                <div className="word-header" id="word">
+                    <h1 className="word-title">{wordData.word}</h1>
+                    {phonetic && <p className="word-phonetic">{phonetic}</p>}
+                    {wordData.phonetics?.filter(p => p.audio).length > 0 && (
+                        <div className="word-audio">
+                            {wordData.phonetics
+                                .filter(p => p.audio)
+                                .map((p, i) => (
+                                    <audio key={i} controls>
+                                        <source src={p.audio} type="audio/mpeg" />
+                                    </audio>
+                                ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Meanings */}
+                <div className="stagger-children">
+                    {filteredMeanings.map((meaning, i) => (
+                        <div key={i} className="meaning-section">
+                            <p className="meaning-pos">{meaning.partOfSpeech}</p>
+                            <ul className="definition-list">
+                                {meaning.definitions.map((def, j) => (
+                                    <li key={j} className="definition-item">
+                                        <p className="definition-text">{def.definition}</p>
+                                        {def.example && (
+                                            <p className="definition-example">{def.example}</p>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Synonyms */}
+                {synonyms?.length > 0 && (
+                    <div className="related-section" id="synonyms">
+                        <p className="related-label">Synonyms</p>
+                        <div className="chips">
+                            {synonyms.map((s, i) => (
+                                <button
+                                    key={i}
+                                    className="chip chip-synonym"
+                                    onClick={() => navigate(`/word/${s}`)}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Antonyms */}
+                {antonyms?.length > 0 && (
+                    <div className="related-section" id="antonyms">
+                        <p className="related-label">Antonyms</p>
+                        <div className="chips">
+                            {antonyms.map((a, i) => (
+                                <button
+                                    key={i}
+                                    className="chip chip-antonym"
+                                    onClick={() => navigate(`/word/${a}`)}
+                                >
+                                    {a}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="footer-hint">
+                    Powered by Free Dictionary API
+                </div>
+            </div>
+        </div>
+    );
 }

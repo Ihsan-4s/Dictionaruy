@@ -1,27 +1,25 @@
-import { useState } from 'react'
 import './App.css'
-import NavbarComp from './components/NavbarComp'
 import SearchBarComp from './components/SearchBarComp'
 import CardDayComp from './components/CardDayComp'
 
 function App() {
-
-  return (
-    <>
-      <div style={{
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom, #013fba, #ffffff)",
-      }}>
-        <div>
-          <h1 className="text-4xl font-bold text-center text-white mb-10">English Dictionary for Better Vocabulary</h1>
-          <SearchBarComp />
-          <div className="mt-10">
+    return (
+        <div className="page-container">
+            <section className="hero animate-fade-in-up">
+                <h1 className="hero-title">
+                    Build a Better <span className="highlight">Vocabulary</span>
+                </h1>
+                <p className="hero-subtitle">
+                    Explore definitions, synonyms, antonyms, and pronunciation for any English word.
+                </p>
+                <SearchBarComp />
+            </section>
             <CardDayComp />
-          </div>
+            <div className="footer-hint">
+                Powered by Free Dictionary API
+            </div>
         </div>
-      </div>
-    </>
-  )
+    );
 }
 
 export default App

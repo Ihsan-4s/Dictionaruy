@@ -1,75 +1,78 @@
-import { Button, Card, Spinner } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { HiArrowRight, HiArrowPath } from "react-icons/hi2";
 
 export default function CardDayComp() {
     const [word, setWord] = useState("");
     const [partOfSpeech, setPartOfSpeech] = useState("");
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
     function handleNavigate() {
-        navigate(`/word/${word}`)
+        navigate(`/word/${word}`);
     }
 
     async function wordOfDay() {
-        const urlRand = "https://random-word-api.herokuapp.com/word?number=1"
+        setLoading(true);
+        const urlRand = "https://random-word-api.herokuapp.com/word?number=1";
         try {
-            const randRes = await fetch(urlRand)
-            const randData = await randRes.json()
-            const randWord = randData[0]
+            const randRes = await fetch(urlRand);
+            const randData = await randRes.json();
+            const randWord = randData[0];
 
-            const dicRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${randWord}`)
-            const dictData = await dicRes.json()
+            const dicRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${randWord}`);
+            const dictData = await dicRes.json();
             if (!Array.isArray(dictData)) {
-                wordOfDay()
-                return
+                wordOfDay();
+                return;
             }
-            const response = dictData[0]
-
-            setWord(response.word)
-            setPartOfSpeech(response.meanings[0].partOfSpeech)
-            setLoading(false)
+            const response = dictData[0];
+            setWord(response.word);
+            setPartOfSpeech(response.meanings[0].partOfSpeech);
+            setLoading(false);
         } catch (err) {
             console.error("Error fetching word of the day:", err);
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        wordOfDay()
-    }, [])
+        wordOfDay();
+    }, []);
 
     if (loading) {
-            return (
-                <div className="flex flex-col gap-2">
-                    <div className="text-center mt-50 mx-auto">
-                        <Spinner aria-label="Center-aligned spinner example" size="xl" />
+        return (
+            <div className="wotd-section animate-fade-in">
+                <p className="wotd-label">Random Word</p>
+                <div className="wotd-card">
+                    <div className="skeleton" style={{ width: "45%", height: 32, marginBottom: 12 }}></div>
+                    <div className="skeleton" style={{ width: "20%", height: 18, marginBottom: 28 }}></div>
+                    <div style={{ display: "flex", gap: 12 }}>
+                        <div className="skeleton" style={{ width: 120, height: 40 }}></div>
+                        <div className="skeleton" style={{ width: 160, height: 40 }}></div>
                     </div>
                 </div>
-            )
-        }
+            </div>
+        );
+    }
 
     return (
-        <Card className="w-full max-w-4xl mx-auto bg-gradient-to-r from-white to-blue-300">
-            <h5 className="text-2xl font-bold tracking-tight text-blue-600 dark:text-white">
-                Get Random Word
-            </h5>
-                <div>
-                    <h1 className="text-4xl font-bold text-blue-700 dark:text-gray-400 underline">
-                        {word}
-                    </h1>
-                    <h1 className="text-lg text-gray-500 dark:text-gray-400">
-                        {partOfSpeech}
-                    </h1>
-                    <div className="flex justify-between">
-                        <Button onClick={wordOfDay}>
-                            Random Again
-                        </Button>
-                        <Button onClick={handleNavigate}>
-                            Go get the random word →
-                        </Button>
-                    </div>
+        <div className="wotd-section animate-fade-in-up">
+            <p className="wotd-label">Random Word</p>
+            <div className="wotd-card">
+                <p className="wotd-word">{word}</p>
+                <p className="wotd-pos">{partOfSpeech}</p>
+                <div className="wotd-actions">
+                    <button className="btn btn-ghost" onClick={wordOfDay}>
+                        <HiArrowPath size={16} />
+                        Randomize
+                    </button>
+                    <button className="btn btn-primary" onClick={handleNavigate}>
+                        View Definition
+                        <HiArrowRight size={16} />
+                    </button>
                 </div>
-        </Card>
+            </div>
+        </div>
     );
 }

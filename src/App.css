@@ -1,42 +1,531 @@
-/* #root {
-  max-width: 1280px;
+/* ─── Navbar ─── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.navbar-logo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color var(--transition-fast);
+}
+
+.navbar-logo:hover {
+  color: var(--text-accent);
+}
+
+.navbar-logo .logo-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.navbar-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  padding: 2px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Page Container ─── */
+.page-container {
+  min-height: calc(100vh - 56px);
+  padding: 0 24px;
+}
+
+/* ─── Hero Section ─── */
+.hero {
+  max-width: 720px;
   margin: 0 auto;
-  padding: 2rem;
+  padding-top: 120px;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-bottom: 12px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.hero-title .highlight {
+  background: linear-gradient(135deg, var(--accent), #6ee7b7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  max-width: 480px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+}
+
+/* ─── Search Bar ─── */
+.search-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.search-bar:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-glow);
+  background: var(--bg-tertiary);
+}
+
+.search-bar .search-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.search-bar:focus-within .search-icon {
+  color: var(--accent);
+}
+
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.search-bar input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.search-bar .search-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+}
+
+.search-bar .search-btn:hover {
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* ─── Word of the Day Card ─── */
+.wotd-section {
+  max-width: 600px;
+  margin: 56px auto 0;
+}
+
+.wotd-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+}
+
+.wotd-card {
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-base);
+}
+
+.wotd-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-glow);
+}
+
+.wotd-word {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.wotd-pos {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 500;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+.wotd-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0a0a0b;
+  border-color: var(--accent);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border-medium);
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+  background: var(--glass-bg-hover);
+}
+
+/* ─── Detail Page ─── */
+.detail-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.detail-search {
+  margin-bottom: 40px;
+}
+
+/* ─── Filter Pills ─── */
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.filter-pill {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.filter-pill:hover {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.filter-pill.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Word Header ─── */
+.word-header {
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.word-title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.word-phonetic {
+  font-size: 1.1rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.word-audio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ─── Meanings ─── */
+.meaning-section {
+  margin-bottom: 32px;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.meaning-pos {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meaning-pos::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.definition-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.definition-item {
+  padding-left: 16px;
+  border-left: 2px solid var(--bg-elevated);
+  transition: border-color var(--transition-fast);
+}
+
+.definition-item:hover {
+  border-left-color: var(--accent);
+}
+
+.definition-text {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+.definition-example {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin-top: 6px;
+  padding-left: 0;
+}
+
+.definition-example::before {
+  content: '"';
+}
+.definition-example::after {
+  content: '"';
+}
+
+/* ─── Synonyms & Antonyms ─── */
+.related-section {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.related-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin-bottom: 14px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+.chip-synonym {
+  color: var(--accent);
+}
+.chip-synonym:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+}
+
+.chip-antonym {
+  color: #fb7185;
+}
+.chip-antonym:hover {
+  background: rgba(251, 113, 133, 0.1);
+  border-color: #fb7185;
+}
+
+/* ─── Loading Skeleton ─── */
+.skeleton-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.skeleton-line {
+  height: 16px;
+  border-radius: var(--radius-sm);
+  width: 100%;
+}
+
+.skeleton-detail {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Not Found ─── */
+.not-found {
+  text-align: center;
+  padding-top: 80px;
+}
+
+.not-found-emoji {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.not-found-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.not-found-text {
+  color: var(--text-tertiary);
+  font-size: 0.95rem;
+}
+
+/* ─── Footer hint ─── */
+.footer-hint {
+  text-align: center;
+  padding: 48px 0 24px;
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 72px;
   }
-  to {
-    transform: rotate(360deg);
+
+  .hero-subtitle {
+    margin-bottom: 32px;
+  }
+
+  .wotd-section {
+    margin-top: 40px;
+  }
+
+  .wotd-card {
+    padding: 24px;
+  }
+
+  .wotd-actions {
+    flex-direction: column;
+  }
+
+  .wotd-actions .btn {
+    justify-content: center;
+  }
+
+  .detail-container {
+    padding-top: 32px;
+  }
+
+  .filter-pills {
+    gap: 6px;
+  }
+
+  .filter-pill {
+    padding: 5px 12px;
+    font-size: 0.75rem;
   }
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-} */
